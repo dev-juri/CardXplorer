@@ -19,6 +19,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -38,7 +42,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
@@ -47,6 +51,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation 'androidx.cardview:cardview:1.0.0'
+
+    //fragment
+    def fragment_version = "1.5.4"
+    implementation "androidx.fragment:fragment-ktx:$fragment_version"
 
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:2.44"
@@ -68,13 +76,5 @@ dependencies {
     implementation "com.squareup.moshi:moshi:$moshi_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-
-    implementation 'com.android.support:multidex:1.0.3'
-
-    //Timber
-    implementation "com.jakewharton.timber:timber:5.0.1"
-
-    //Joda time library for dealing with time
-    implementation "joda-time:joda-time:2.10.10"
 
 }

@@ -78,3 +78,7 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
 }
+
+kapt {
+    correctErrorTypes = true
+}

@@ -8,9 +8,8 @@ import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.oluwafemi.cardxplorer.R
 import com.oluwafemi.cardxplorer.databinding.FragmentMainBinding
-import com.oluwafemi.cardxplorer.util.viewBinding
+import com.oluwafemi.cardxplorer.util.isOnline
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +19,9 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private val binding by viewBinding(FragmentMainBinding::bind)
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
@@ -28,7 +29,14 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        _binding = FragmentMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,7 +47,11 @@ class MainFragment : Fragment() {
         binding.cardNumberInputField.editText?.doAfterTextChanged {
             val numberString = it.toString().trim()
             if (numberString.length >= 8) {
-                viewModel.fetchCardDetails(numberString)
+                if (isOnline(requireContext())) {
+                    viewModel.fetchCardDetails(numberString)
+                } else {
+                    Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -52,11 +64,14 @@ class MainFragment : Fragment() {
                         binding.progressBar.visibility = View.GONE
                         viewModel.resetState()
                         viewModel.clearError()
+                        binding.cardNumberInputField.editText?.isEnabled = true
                     }
                     LoadingState.ERROR -> {
+                        binding.cardNumberInputField.editText?.isEnabled = true
                         binding.progressBar.visibility = View.GONE
                     }
                     else -> {
+                        binding.cardNumberInputField.editText?.isEnabled = false
                         binding.progressBar.visibility = View.VISIBLE
                         viewModel.clearError()
                     }
@@ -75,7 +90,14 @@ class MainFragment : Fragment() {
 
         viewModel.cardDetails.observe(viewLifecycleOwner) { cardDetails ->
             if (cardDetails != null) {
-                binding.cardDetails.text = cardDetails.toString()
+                binding.cardType.text = cardDetails.type
+                binding.cardBrand.text = cardDetails.scheme
+                binding.cardCountry.text =
+                    "${cardDetails.country?.name} ${cardDetails.country?.emoji}"
+            } else {
+                binding.cardType.clearComposingText()
+                binding.cardBrand.clearComposingText()
+                binding.cardCountry.clearComposingText()
             }
         }
     }
